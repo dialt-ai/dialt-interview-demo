@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from converse_sdk.evals import load_cases, validate_case
+from dialt import load_cases, validate_case
 from scripts.run_evals import batch_contract_error
 
 

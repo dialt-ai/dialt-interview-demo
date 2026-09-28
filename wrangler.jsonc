@@ -4,7 +4,7 @@
   "compatibility_date": "2026-08-31",
   "workers_dev": true,
   "vars": {
-    "CONVERSE_API_BASE_URL": "https://dialt.com"
+    "CONVERSE_API_BASE_URL": "https://api.dialt.com"
   },
   "assets": {
     "directory": "./static",

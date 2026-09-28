@@ -1,4 +1,4 @@
-import { ConverseClient } from 'https://cdn.jsdelivr.net/npm/@trelis/converse@0.22.0/src/index.js';
+import { DialtClient } from 'https://cdn.jsdelivr.net/npm/@dialt/sdk@0.48.1/src/index.js';
 
 const config = await fetch('/api/config').then(response => {
   if (!response.ok) throw new Error('Could not load the interview configuration.');
@@ -139,19 +139,17 @@ async function startInterview() {
     const credential = await response.json();
     if (!response.ok) throw new Error(credential.detail || `Session setup failed (${response.status}).`);
 
-    client = new ConverseClient({
-      url: 'wss://dialt.com/ws',
+    client = new DialtClient({
       sessionId: credential.session_id,
       apiKey: credential.api_key,
       mode: {
-        kind: 'converse',
+        kind: 'dialt',
         modality: 'voice',
         instructions: config.instructions,
         tools: [config.tool],
         greeting: config.greeting,
         end_call: true,
       },
-      ambience: 'thinking',
     });
 
     client.addEventListener('asr', event => addTurn('user', event.detail.text));

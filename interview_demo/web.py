@@ -46,12 +46,12 @@ async def create_session() -> dict:
             detail="CONVERSE_API_KEY is not configured on the server.",
         )
 
-    base_url = os.getenv("CONVERSE_API_BASE_URL", "https://dialt.com").rstrip("/")
+    base_url = os.getenv("CONVERSE_API_BASE_URL", "https://api.dialt.com").rstrip("/")
     session_id = f"short-interview-{uuid.uuid4().hex[:16]}"
     try:
         async with httpx.AsyncClient(timeout=20) as client:
             response = await client.post(
-                f"{base_url}/api/v1/session-keys",
+                f"{base_url}/v1/session-keys",
                 headers={"Authorization": f"Bearer {api_key}"},
                 json={"session_id": session_id},
             )

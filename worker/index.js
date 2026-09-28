@@ -94,11 +94,11 @@ async function createSession(env) {
     return jsonResponse({detail: 'CONVERSE_API_KEY is not configured on the server.'}, 503);
   }
 
-  const baseUrl = String(env.CONVERSE_API_BASE_URL || 'https://dialt.com').replace(/\/$/, '');
+  const baseUrl = String(env.CONVERSE_API_BASE_URL || 'https://api.dialt.com').replace(/\/$/, '');
   const sessionId = `short-interview-${crypto.randomUUID().replaceAll('-', '').slice(0, 16)}`;
   let response;
   try {
-    response = await fetch(`${baseUrl}/api/v1/session-keys`, {
+    response = await fetch(`${baseUrl}/v1/session-keys`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,

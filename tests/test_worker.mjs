@@ -49,13 +49,13 @@ test('session exchange keeps the persistent key in the Worker', async () => {
       new Request('https://example.test/api/session', {method: 'POST'}),
       {
         CONVERSE_API_KEY: 'ck_worker_secret',
-        CONVERSE_API_BASE_URL: 'https://dialt.com',
+        CONVERSE_API_BASE_URL: 'https://api.dialt.com',
       },
     );
     const body = await response.json();
 
     assert.equal(response.status, 201);
-    assert.equal(upstream.url, 'https://dialt.com/api/v1/session-keys');
+    assert.equal(upstream.url, 'https://api.dialt.com/v1/session-keys');
     assert.equal(upstream.options.headers.Authorization, 'Bearer ck_worker_secret');
     assert.match(body.session_id, /^short-interview-[a-f0-9]{16}$/);
     assert.equal(body.api_key, 'scoped_key');

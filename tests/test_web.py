@@ -49,7 +49,7 @@ async def test_session_key_exchange_stays_on_backend(monkeypatch: pytest.MonkeyP
     monkeypatch.setattr(web.httpx, "AsyncClient", FakeClient)
     result = await web.create_session()
 
-    assert captured["url"] == "https://example.test/api/v1/session-keys"
+    assert captured["url"] == "https://example.test/v1/session-keys"
     assert captured["headers"] == {"Authorization": "Bearer ck_server_secret"}
     assert result["api_key"] == "sk_browser_safe"
     assert result["session_id"].startswith("short-interview-")

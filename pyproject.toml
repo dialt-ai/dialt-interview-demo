@@ -5,7 +5,7 @@ description = "A short guided voice interview built with Dialt"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-  "converse-sdk>=0.14.0",
+  "dialt-sdk>=0.39.1",
   "fastapi>=0.116",
   "httpx>=0.28",
   "python-dotenv>=1.0",
