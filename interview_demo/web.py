@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import uuid
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 import httpx
 from dotenv import load_dotenv
@@ -37,6 +38,13 @@ async def health() -> dict[str, bool]:
     return {"ok": True, "configured": bool(os.getenv("CONVERSE_API_KEY", "").strip())}
 
 
+def realtime_url(base_url: str) -> str:
+    """The realtime endpoint on the same API origin that mints the session key."""
+    parts = urlsplit(base_url)
+    scheme = "ws" if parts.scheme == "http" else "wss"
+    return urlunsplit((scheme, parts.netloc, "/v1/realtime", "", ""))
+
+
 @app.post("/api/session")
 async def create_session() -> dict:
     api_key = os.getenv("CONVERSE_API_KEY", "").strip()
@@ -46,12 +54,12 @@ async def create_session() -> dict:
             detail="CONVERSE_API_KEY is not configured on the server.",
         )
 
-    base_url = os.getenv("CONVERSE_API_BASE_URL", "https://dialt.com").rstrip("/")
+    base_url = os.getenv("CONVERSE_API_BASE_URL", "https://api.dialt.com").rstrip("/")
     session_id = f"short-interview-{uuid.uuid4().hex[:16]}"
     try:
         async with httpx.AsyncClient(timeout=20) as client:
             response = await client.post(
-                f"{base_url}/api/v1/session-keys",
+                f"{base_url}/v1/session-keys",
                 headers={"Authorization": f"Bearer {api_key}"},
                 json={"session_id": session_id},
             )
@@ -70,4 +78,4 @@ async def create_session() -> dict:
             status_code=response.status_code,
             detail=str(upstream_detail or "Dialt rejected the session credential request."),
         )
-    return response.json()
+    return {**response.json(), "ws_url": realtime_url(base_url)}

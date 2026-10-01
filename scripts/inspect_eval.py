@@ -5,7 +5,7 @@ import json
 import os
 from pathlib import Path
 
-from converse_sdk.evals import EvalsClient
+from dialt import EvalsClient
 from dotenv import load_dotenv
 
 
@@ -23,7 +23,7 @@ def main() -> None:
         raise SystemExit("CONVERSE_API_KEY is required in .env")
     client = EvalsClient(
         api_key,
-        base_url=os.getenv("CONVERSE_API_BASE_URL", "https://dialt.com"),
+        base_url=os.getenv("CONVERSE_API_BASE_URL", "https://api.dialt.com"),
     )
     run = client.get_run(args.run_id)
     failures = [

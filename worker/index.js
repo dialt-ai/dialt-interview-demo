@@ -83,6 +83,17 @@ export function publicConfig() {
 }
 
 
+// The realtime endpoint lives on the same API origin that mints the session key, so a deployment
+// pointed at another Dialt environment connects to that environment too.
+export function realtimeUrl(baseUrl) {
+  const url = new URL(baseUrl);
+  url.protocol = url.protocol === 'http:' ? 'ws:' : 'wss:';
+  url.pathname = '/v1/realtime';
+  url.search = '';
+  return url.toString();
+}
+
+
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {status, headers: JSON_HEADERS});
 }
@@ -94,11 +105,11 @@ async function createSession(env) {
     return jsonResponse({detail: 'CONVERSE_API_KEY is not configured on the server.'}, 503);
   }
 
-  const baseUrl = String(env.CONVERSE_API_BASE_URL || 'https://dialt.com').replace(/\/$/, '');
+  const baseUrl = String(env.CONVERSE_API_BASE_URL || 'https://api.dialt.com').replace(/\/$/, '');
   const sessionId = `short-interview-${crypto.randomUUID().replaceAll('-', '').slice(0, 16)}`;
   let response;
   try {
-    response = await fetch(`${baseUrl}/api/v1/session-keys`, {
+    response = await fetch(`${baseUrl}/v1/session-keys`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -121,7 +132,7 @@ async function createSession(env) {
     }
     return jsonResponse({detail: String(detail)}, response.status);
   }
-  return new Response(text, {status: response.status, headers: JSON_HEADERS});
+  return jsonResponse({...JSON.parse(text), ws_url: realtimeUrl(baseUrl)}, response.status);
 }
 
 

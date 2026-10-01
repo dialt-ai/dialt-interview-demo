@@ -9,6 +9,7 @@ Hosted demo: <https://dialt-interview-demo.ronan-e62.workers.dev>
 ## Setup
 
 1. Copy `.env.example` to `.env` and set `CONVERSE_API_KEY` to a persistent `ck_` key.
+   `CONVERSE_API_BASE_URL` selects the Dialt API origin (default `https://api.dialt.com`; use `https://api.dev.dialt.com` for dev). The server mints session keys there and the browser connects to that origin's `/v1/realtime`.
 2. Install dependencies:
 
    ```sh

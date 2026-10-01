@@ -4,7 +4,7 @@ import argparse
 import os
 from pathlib import Path
 
-from converse_sdk.evals import EvalsClient, EvalsError, load_cases, validate_case
+from dialt import EvalsClient, EvalsError, load_cases, validate_case
 from dotenv import load_dotenv
 
 
@@ -71,7 +71,7 @@ def main() -> None:
     ]
     client = EvalsClient(
         api_key,
-        base_url=os.getenv("CONVERSE_API_BASE_URL", "https://dialt.com"),
+        base_url=os.getenv("CONVERSE_API_BASE_URL", "https://api.dialt.com"),
     )
     try:
         cases = client.upsert_cases(documents)

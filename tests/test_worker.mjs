@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import worker, { publicConfig } from '../worker/index.js';
+import worker, { publicConfig, realtimeUrl } from '../worker/index.js';
 
 
 test('public config matches the guided interview contract', () => {
@@ -49,20 +49,28 @@ test('session exchange keeps the persistent key in the Worker', async () => {
       new Request('https://example.test/api/session', {method: 'POST'}),
       {
         CONVERSE_API_KEY: 'ck_worker_secret',
-        CONVERSE_API_BASE_URL: 'https://dialt.com',
+        CONVERSE_API_BASE_URL: 'https://api.dialt.com',
       },
     );
     const body = await response.json();
 
     assert.equal(response.status, 201);
-    assert.equal(upstream.url, 'https://dialt.com/api/v1/session-keys');
+    assert.equal(upstream.url, 'https://api.dialt.com/v1/session-keys');
     assert.equal(upstream.options.headers.Authorization, 'Bearer ck_worker_secret');
     assert.match(body.session_id, /^short-interview-[a-f0-9]{16}$/);
     assert.equal(body.api_key, 'scoped_key');
+    assert.equal(body.ws_url, 'wss://api.dialt.com/v1/realtime');
     assert.ok(!Object.values(body).includes('ck_worker_secret'));
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+
+test('the realtime URL follows the configured API origin', () => {
+  assert.equal(realtimeUrl('https://api.dialt.com'), 'wss://api.dialt.com/v1/realtime');
+  assert.equal(realtimeUrl('https://api.dev.dialt.com/'), 'wss://api.dev.dialt.com/v1/realtime');
+  assert.equal(realtimeUrl('http://api.localhost:8080'), 'ws://api.localhost:8080/v1/realtime');
 });
 
 
