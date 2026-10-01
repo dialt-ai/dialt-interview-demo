@@ -53,4 +53,11 @@ async def test_session_key_exchange_stays_on_backend(monkeypatch: pytest.MonkeyP
     assert captured["headers"] == {"Authorization": "Bearer ck_server_secret"}
     assert result["api_key"] == "sk_browser_safe"
     assert result["session_id"].startswith("short-interview-")
+    assert result["ws_url"] == "wss://example.test/v1/realtime"
     assert "ck_server_secret" not in result.values()
+
+
+def test_realtime_url_follows_the_api_origin() -> None:
+    assert web.realtime_url("https://api.dialt.com") == "wss://api.dialt.com/v1/realtime"
+    assert web.realtime_url("https://api.dev.dialt.com/") == "wss://api.dev.dialt.com/v1/realtime"
+    assert web.realtime_url("http://api.localhost:8080") == "ws://api.localhost:8080/v1/realtime"

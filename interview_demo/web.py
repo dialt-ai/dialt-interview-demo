@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import uuid
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 import httpx
 from dotenv import load_dotenv
@@ -35,6 +36,13 @@ async def config() -> dict:
 @app.get("/api/health")
 async def health() -> dict[str, bool]:
     return {"ok": True, "configured": bool(os.getenv("CONVERSE_API_KEY", "").strip())}
+
+
+def realtime_url(base_url: str) -> str:
+    """The realtime endpoint on the same API origin that mints the session key."""
+    parts = urlsplit(base_url)
+    scheme = "ws" if parts.scheme == "http" else "wss"
+    return urlunsplit((scheme, parts.netloc, "/v1/realtime", "", ""))
 
 
 @app.post("/api/session")
@@ -70,4 +78,4 @@ async def create_session() -> dict:
             status_code=response.status_code,
             detail=str(upstream_detail or "Dialt rejected the session credential request."),
         )
-    return response.json()
+    return {**response.json(), "ws_url": realtime_url(base_url)}

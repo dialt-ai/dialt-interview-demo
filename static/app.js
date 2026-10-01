@@ -140,6 +140,7 @@ async function startInterview() {
     if (!response.ok) throw new Error(credential.detail || `Session setup failed (${response.status}).`);
 
     client = new DialtClient({
+      url: credential.ws_url,
       sessionId: credential.session_id,
       apiKey: credential.api_key,
       mode: {
